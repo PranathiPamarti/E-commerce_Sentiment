@@ -1,35 +1,48 @@
 import streamlit as st
-import pandas as pd
 from pathlib import Path
+from src.review_data import load_review_data, review_data_version
 
-DATA_PATH = Path(__file__).resolve().parents[2] / "data" / "sentiment_reviews.csv"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 @st.cache_data(show_spinner=True)
-def load_data():
-    df = pd.read_csv(DATA_PATH)
-    df["sentiment_value"] = (df["avg_sentiment_score"] > 0).astype(int)
-    df["Time"] = pd.to_datetime(df["Time"], unit="s", errors="coerce", utc=True)
-    return df
+def load_data(data_version):
+    return load_review_data(PROJECT_ROOT)
 
 # -----------------------------------
 st.title("🔍 Product Explorer")
 
-df = load_data()
+try:
+    df, products = load_data(review_data_version(PROJECT_ROOT))
+except (FileNotFoundError, ValueError) as error:
+    st.error(str(error))
+    st.stop()
 
-product_id = st.selectbox("Select Product", df["ProductId"].unique())
+product_ids = df["ProductId"].dropna().unique()
+product_id = st.selectbox("Select Product", product_ids)
 
 prod_df = df[df["ProductId"] == product_id].sort_values("Time", ascending=False)
+product = products.loc[products["ProductId"] == product_id].iloc[0]
 
 # -----------------------------------
 st.subheader("📌 Product Summary")
 
 cols = ["ProductId", "Summary", "Score"]
-st.write(prod_df.head(1)[cols])
+st.markdown(
+    f"**{product['product_title']}** · {product['brand']} · "
+    f"{product['product_category'].title()} · ${product['price']:.2f}"
+)
+st.write(
+    prod_df[cols].head(1).assign(
+        Review_Count=len(prod_df),
+        Average_Rating=prod_df["Score"].mean(),
+        Average_Sentiment=prod_df["avg_sentiment_score"].mean(),
+    )
+)
 
 # -----------------------------------
-st.subheader("😊 Recent Positive Reviews")
-st.write(prod_df[prod_df["sentiment_value"] == 1][["Time", "Text"]].head(5))
+st.subheader("😊 Positive text sentiment")
+st.write(prod_df[prod_df["sentiment_value"] == 1][["Time", "Score", "Summary", "Text"]].head(5))
 
 # -----------------------------------
-st.subheader("😞 Recent Negative Reviews")
-st.write(prod_df[prod_df["sentiment_value"] == 0][["Time", "Text"]].head(5))
+st.subheader("😐 Neutral or negative text sentiment")
+st.write(prod_df[prod_df["sentiment_value"] == 0][["Time", "Score", "Summary", "Text"]].head(5))
