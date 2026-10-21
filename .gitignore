@@ -1,0 +1,22 @@
+# Python venv
+venv/
+.env/
+.venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Large data
+data/
+models/
+outputs/
+
+# OS system files
+.DS_Store
+Thumbs.db
