@@ -14,9 +14,10 @@ def load_data(data_version):
     return load_review_data(PROJECT_ROOT)
 
 
-st.title("Product Insights")
+st.title("Product insights · synthetic")
 st.caption(
-    "Interactive exploration of generated synthetic review data—not real customer feedback."
+    "Review records are synthetic. Text sentiment is predicted by a TF-IDF classifier "
+    "trained on labeled UCI Amazon product reviews; the sample review data is not real customer feedback."
 )
 try:
     df, products = load_data(review_data_version(PROJECT_ROOT))
@@ -67,11 +68,9 @@ with left:
         rating_counts,
         x="Rating",
         y="Reviews",
-        color="Rating",
-        color_continuous_scale="RdYlGn",
         title="Review count by star rating",
+        color_discrete_sequence=["#68766C"],
     )
-    rating_chart.update_layout(showlegend=False, coloraxis_showscale=False)
     st.plotly_chart(rating_chart, use_container_width=True)
 
 with right:
@@ -91,7 +90,7 @@ with right:
         y="ProductCategory",
         orientation="h",
         color="Average_Sentiment",
-        color_continuous_scale="RdYlGn",
+        color_continuous_scale="Greys",
         hover_data={"Reviews": True, "Average_Rating": ":.2f", "Average_Sentiment": ":.2f"},
         title="Average rating by category",
         labels={"Average_Rating": "Average rating", "ProductCategory": ""},
@@ -151,7 +150,7 @@ with left:
         y="product_title",
         orientation="h",
         color="Average_Rating",
-        color_continuous_scale="RdYlGn",
+        color_continuous_scale="Greys",
         hover_data={"brand": True, "price": ":$.2f", "Average_Rating": ":.2f"},
         title="Top 10 by review volume",
     )
@@ -193,7 +192,7 @@ with right:
             y="product_title",
             orientation="h",
             color="Average_Sentiment",
-            color_continuous_scale="RdYlGn",
+            color_continuous_scale="Greys",
             range_color=[-1, 1],
             hover_data={
                 "brand": True,
@@ -230,7 +229,7 @@ else:
         width=1000,
         height=450,
         background_color="white",
-        colormap="viridis",
+        colormap="Greys",
         max_words=120,
     ).generate(sample_text)
     fig, ax = plt.subplots(figsize=(14, 6))

@@ -9,7 +9,11 @@ def load_data(data_version):
     return load_review_data(PROJECT_ROOT)
 
 # -----------------------------------
-st.title("🔍 Product Explorer")
+st.title("Product explorer · synthetic")
+st.caption(
+    "Review records are synthetic; sentiment labels are predicted from review text, "
+    "not derived from star ratings."
+)
 
 try:
     df, products = load_data(review_data_version(PROJECT_ROOT))
@@ -44,5 +48,5 @@ st.subheader("😊 Positive text sentiment")
 st.write(prod_df[prod_df["sentiment_value"] == 1][["Time", "Score", "Summary", "Text"]].head(5))
 
 # -----------------------------------
-st.subheader("😐 Neutral or negative text sentiment")
+st.subheader("Negative text sentiment")
 st.write(prod_df[prod_df["sentiment_value"] == 0][["Time", "Score", "Summary", "Text"]].head(5))

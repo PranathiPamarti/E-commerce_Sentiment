@@ -265,23 +265,10 @@ def build_dataset(review_count: int, user_count: int, product_count: int, seed: 
     reviews.to_csv(data_dir / "sentiment_reviews.csv", index=False)
     product_text.to_csv(data_dir / "product_text.csv", index=False)
 
-    user_map = {user_id: index for index, user_id in enumerate(user_ids)}
-    product_map = {product_id: index for index, product_id in enumerate(product_ids)}
-    np.save(models_dir / "P.npy", user_factors)
-    np.save(models_dir / "Q.npy", product_factors)
-    np.save(models_dir / "cosine_sim.npy", cosine_sim)
-    for filename, mapping in (
-        ("user_map.pkl", user_map),
-        ("product_map.pkl", product_map),
-    ):
-        with (models_dir / filename).open("wb") as mapping_file:
-            pickle.dump(mapping, mapping_file)
-
     hybrid_model = {
         "P": user_factors,
         "Q": product_factors,
         "cosine_sim": cosine_sim,
-        "sentiment_map": sentiment_map,
         "product_text": product_text,
     }
     with (models_dir / "hybrid_model.pkl").open("wb") as model_file:

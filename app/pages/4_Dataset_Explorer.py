@@ -13,9 +13,10 @@ def load_data(data_version):
     return load_review_data(PROJECT_ROOT)
 
 
-st.title("Dataset Explorer")
+st.title("Dataset explorer · synthetic")
 st.caption(
-    "This page and Product Insights use the same prepared review records and sentiment labels."
+    "This page and Product Insights use the same review records and TF-IDF model predictions. "
+    "The review records are synthetic; the model was trained on labeled UCI Amazon product reviews."
 )
 
 try:
@@ -73,5 +74,6 @@ st.dataframe(
 )
 st.caption(
     f"Showing all {len(display_data):,} matching rows. "
-    "Text sentiment is positive when avg_sentiment_score > 0; this is distinct from a 4–5 star rating."
+    "Sentiment labels are predicted from review text by the trained binary classifier; "
+    "the signed score is derived from its positive-class probability."
 )

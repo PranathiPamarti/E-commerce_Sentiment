@@ -21,7 +21,11 @@ def load_hybrid_model(model_version):
         return pickle.load(f)
 
 # -----------------------------------
-st.title("🎯 Hybrid Recommendation Demo")
+st.title("Recommendation prototype")
+st.caption(
+    "Synthetic demonstration only. Its user/product latent factors are generated "
+    "by the data simulator; they are not fitted by a recommendation-training step."
+)
 
 try:
     df = load_data(review_data_version(PROJECT_ROOT))
@@ -193,7 +197,7 @@ reason_labels = []
 for index in ranked_indices:
     contributions = {
         "Personalized fit (simulated model)": cf_contributions[index],
-        "Review sentiment (synthetic proxy)": sentiment_contributions[index],
+        "Review sentiment (text model)": sentiment_contributions[index],
     }
     if reference_product is not None:
         contributions["Similarity to reference product"] = content_contributions[index]
@@ -261,9 +265,9 @@ recommendation score is their sum.
 
 - **Personalized fit:** relative collaborative-filtering score, min-max scaled across
   unseen candidates; weight **{cf_weight:.0%}**.
-- **Review sentiment:** average review sentiment mapped from -1–+1 to 0–1; weight
-  **{sentiment_weight:.0%}**. This is a synthetic, rating-derived proxy—not an independent
-  sentiment model.
+- **Review sentiment:** average TF-IDF model prediction mapped from -1–+1 to 0–1; weight
+  **{sentiment_weight:.0%}**. The classifier was trained on UCI-labeled Amazon product
+  reviews; the app's review records remain synthetic.
 - **Reference similarity:** product-description similarity to the selected reference
   product; weight **{content_weight:.0%}**.
 
